@@ -20,6 +20,9 @@ def add_to_list(a:int, b:int):
     return list_of_numbers
 
 
+@app.get("/divide/{a,b}")
+def divide(a:int, b:int):
+    return {"divide":a/b}
 
 
 
