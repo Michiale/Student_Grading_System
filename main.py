@@ -1,28 +1,30 @@
-from  fastapi import  FastAPI
+from typing import Union
+
+from fastapi import FastAPI
+from pydantic import BaseModel
 
 app = FastAPI()
 
-list_of_numbers = []
+class Item(BaseModel):
+    name : str
+    price : float 
+    is_offer: Union[bool, None]= None 
 
-@app.get('/addition/{a, b}')
-def add(a:int, b:int):
-    return {"Sum": a+b}
+@app.get("/")
+def read_root():
+    return {"Hello":"World"}
 
-@app.get('/subtracton/{a, b}')
-def sub(a:int, b:int):
-    return {"Sub": a-b}
-
-
-@app.post('/subtracton/{a, b}')
-def add_to_list(a:int, b:int):
-    list_of_numbers.append(a)
-    list_of_numbers.append(b)
-    return list_of_numbers
+@app.get("/items/{item_id}")
+def read_item(item_id:int, q:Union[str, None]= None):
+    return {"item_id": item_id,"q":q}
 
 
-@app.get("/divide/{a,b}")
-def divide(a:int, b:int):
-    return {"divide":a/b}
+@app.put("/items/{item_id}")
+def update_item(item_id:int, item:Item):
+    return {"item_name": item.name,"item_id":item_id}
 
 
+
+
+    
 
