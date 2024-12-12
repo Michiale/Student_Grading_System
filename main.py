@@ -1,24 +1,33 @@
-from typing import Union
-
-from fastapi import FastAPI
+from fastapi import FastAPI ,HTTPException, Depends, status
 from pydantic import BaseModel
+from typing import Annotated
+import models
+from database import engine, SessionLocal
+from sqlalchemy.orm import session
 
 app = FastAPI()
+models.Base.metadata.create_all(bind=engine)
 
-class Item(BaseModel):
-    name : str
-    price : float 
-    is_offer: Union[bool, None]= None 
+class PostBase(BaseModel):
+    title: str
+    content: str
+    user_id :int
 
-@app.get("/")
-def read_root():
-    return {"Hello":"World"}
+class UserBase(BaseModel):
+    username: str
 
-@app.get("/items/{item_id}")
-def read_item(item_id:int, q:Union[str, None]= None):
-    return {"item_id": item_id,"q":q}
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
 
+    finally:
+        db.close()
 
-@app.put("/items/{item_id}")
-def update_item(item_id:int, item:Item):
-    return {"item_name": item.name,"item_id":item_id}
+db_dependency = Annotated(session, Depends(get_db))
+
+@app.post("/users/",status_code=status.HTTP_201_CREATED)
+async def create_user(user: UserBase, db: db_dependency):
+    db_user = models.User(**user.dict())
+    db.add(user)
+    db.comit()
