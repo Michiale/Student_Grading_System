@@ -1,18 +1,14 @@
-from sqlalchemy import Boolean, Column, Integer,String
+from sqlalchemy import Boolean, Column, Integer, String, ForeignKey
 from database import Base
 
-class User(Base):
-    __tablename__ = 'users'
 
-    id = Column(Integer, primary_key = True, index=True)
-    username = Column(String(50), unique=True)
 
-class Post(Base):
-    __tablename__ = 'posts'
 
-    id = Column(Integer, primary_key=True,index=True)
-    title = Column(String(50))
-    content = Column(String(100))
-    user_id = Column(Integer) 
 
+class Student(Base):
+    __tablename__ = 'students'
+
+    student_id = Column(Integer, primary_key=True, index=True)
+    student_name = Column(String(50), unique=False , nullable=False)
+    student_email = Column( String(50), unique=True, nullable=False)
 
